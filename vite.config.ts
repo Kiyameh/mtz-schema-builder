@@ -10,5 +10,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/mtz-schema-builder/',
+  base: process.env.VITE_BASE_PATH || '/mtz-schema-builder',
 })
