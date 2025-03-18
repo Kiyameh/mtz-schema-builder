@@ -1,21 +1,45 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client'
 
-import { useState, useEffect } from "react"
-import { Plus, Trash2, Save, Library } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { CodeBlock } from "@/components/code-block"
-import { generateMongooseSchema, generateTypeScriptInterface, generateZodSchema } from "@/lib/schema-generators"
-import { ModelLibrary } from "@/components/model-library"
-import { toast } from "@/components/ui/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {useState, useEffect} from 'react'
+import {Plus, Trash2, Save, Library} from 'lucide-react'
+import {Button} from '@/components/ui/button'
+import {Card, CardContent} from '@/components/ui/card'
+import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {Checkbox} from '@/components/ui/checkbox'
+import {CodeBlock} from '@/components/code-block'
+import {
+  generateMongooseSchema,
+  generateTypeScriptInterface,
+  generateZodSchema,
+} from '@/lib/schema-generators'
+import {ModelLibrary} from '@/components/model-library'
+import {toast} from '@/components/ui/use-toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
-export type PropertyType = "String" | "Number" | "Boolean" | "Date" | "ObjectId" | "Array" | "Object"
+export type PropertyType =
+  | 'String'
+  | 'Number'
+  | 'Boolean'
+  | 'Date'
+  | 'ObjectId'
+  | 'Array'
+  | 'Object'
 
 export interface Property {
   name: string
@@ -40,29 +64,32 @@ export interface SavedModel {
 }
 
 export default function SchemaGenerator() {
-  const [modelName, setModelName] = useState("")
+  const [modelName, setModelName] = useState('')
   const [properties, setProperties] = useState<Property[]>([
-    { name: "", type: "String", required: false, unique: false },
+    {name: '', type: 'String', required: false, unique: false},
   ])
-  const [activeTab, setActiveTab] = useState("mongoose")
+  const [activeTab, setActiveTab] = useState('mongoose')
   const [generatedCode, setGeneratedCode] = useState({
-    mongoose: "",
-    zod: "",
-    typescript: "",
+    mongoose: '',
+    zod: '',
+    typescript: '',
   })
   const [savedModels, setSavedModels] = useState<SavedModel[]>([])
   const [isLibraryOpen, setIsLibraryOpen] = useState(false)
 
   // Load saved models from localStorage on component mount
   useEffect(() => {
-    const storedModels = localStorage.getItem("schemaModels")
+    const storedModels = localStorage.getItem('schemaModels')
     if (storedModels) {
       setSavedModels(JSON.parse(storedModels))
     }
   }, [])
 
   const addProperty = () => {
-    setProperties([...properties, { name: "", type: "String", required: false, unique: false }])
+    setProperties([
+      ...properties,
+      {name: '', type: 'String', required: false, unique: false},
+    ])
   }
 
   const removeProperty = (index: number) => {
@@ -73,19 +100,19 @@ export default function SchemaGenerator() {
 
   const updateProperty = (index: number, field: keyof Property, value: any) => {
     const newProperties = [...properties]
-    newProperties[index] = { ...newProperties[index], [field]: value }
+    newProperties[index] = {...newProperties[index], [field]: value}
     setProperties(newProperties)
   }
 
   const generateSchemas = () => {
     // Filter out empty properties
-    const validProperties = properties.filter((prop) => prop.name.trim() !== "")
+    const validProperties = properties.filter((prop) => prop.name.trim() !== '')
 
-    if (modelName.trim() === "" || validProperties.length === 0) {
+    if (modelName.trim() === '' || validProperties.length === 0) {
       toast({
-        title: "Validation Error",
-        description: "Model name and at least one property are required.",
-        variant: "destructive",
+        title: 'Validation Error',
+        description: 'Model name and at least one property are required.',
+        variant: 'destructive',
       })
       return
     }
@@ -103,11 +130,11 @@ export default function SchemaGenerator() {
 
   const saveModelToLibrary = () => {
     // Validate that we have generated code and a model name
-    if (!generatedCode.mongoose || modelName.trim() === "") {
+    if (!generatedCode.mongoose || modelName.trim() === '') {
       toast({
-        title: "Cannot Save",
-        description: "Please generate a schema first.",
-        variant: "destructive",
+        title: 'Cannot Save',
+        description: 'Please generate a schema first.',
+        variant: 'destructive',
       })
       return
     }
@@ -115,7 +142,7 @@ export default function SchemaGenerator() {
     const newModel: SavedModel = {
       id: Date.now().toString(),
       modelName,
-      properties: properties.filter((prop) => prop.name.trim() !== ""),
+      properties: properties.filter((prop) => prop.name.trim() !== ''),
       generatedCode,
       createdAt: new Date().toISOString(),
     }
@@ -124,10 +151,10 @@ export default function SchemaGenerator() {
     setSavedModels(updatedModels)
 
     // Save to localStorage
-    localStorage.setItem("schemaModels", JSON.stringify(updatedModels))
+    localStorage.setItem('schemaModels', JSON.stringify(updatedModels))
 
     toast({
-      title: "Success",
+      title: 'Success',
       description: `${modelName} model saved to library.`,
     })
   }
@@ -137,11 +164,11 @@ export default function SchemaGenerator() {
     setSavedModels(updatedModels)
 
     // Update localStorage
-    localStorage.setItem("schemaModels", JSON.stringify(updatedModels))
+    localStorage.setItem('schemaModels', JSON.stringify(updatedModels))
 
     toast({
-      title: "Deleted",
-      description: "Model removed from library.",
+      title: 'Deleted',
+      description: 'Model removed from library.',
     })
   }
 
@@ -152,7 +179,7 @@ export default function SchemaGenerator() {
     setIsLibraryOpen(false)
 
     toast({
-      title: "Model Loaded",
+      title: 'Model Loaded',
       description: `${model.modelName} loaded into editor.`,
     })
   }
@@ -161,7 +188,10 @@ export default function SchemaGenerator() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Schema Definition</h2>
-        <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+        <Dialog
+          open={isLibraryOpen}
+          onOpenChange={setIsLibraryOpen}
+        >
           <DialogTrigger asChild>
             <Button variant="outline">
               <Library className="h-4 w-4 mr-2" />
@@ -172,7 +202,11 @@ export default function SchemaGenerator() {
             <DialogHeader>
               <DialogTitle>Saved Models</DialogTitle>
             </DialogHeader>
-            <ModelLibrary models={savedModels} onDelete={deleteModel} onLoad={loadModel} />
+            <ModelLibrary
+              models={savedModels}
+              onDelete={deleteModel}
+              onLoad={loadModel}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -194,20 +228,29 @@ export default function SchemaGenerator() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Properties</h3>
-                <Button onClick={addProperty} size="sm" variant="outline">
+                <Button
+                  onClick={addProperty}
+                  size="sm"
+                  variant="outline"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Property
                 </Button>
               </div>
 
               {properties.map((property, index) => (
-                <div key={index} className="grid grid-cols-12 gap-4 items-start p-4 border rounded-md">
+                <div
+                  key={index}
+                  className="grid grid-cols-12 gap-4 items-start p-4 border rounded-md"
+                >
                   <div className="col-span-3">
                     <Label htmlFor={`property-${index}-name`}>Name</Label>
                     <Input
                       id={`property-${index}-name`}
                       value={property.name}
-                      onChange={(e) => updateProperty(index, "name", e.target.value)}
+                      onChange={(e) =>
+                        updateProperty(index, 'name', e.target.value)
+                      }
                       placeholder="e.g. name, email"
                       className="mt-1"
                     />
@@ -217,9 +260,14 @@ export default function SchemaGenerator() {
                     <Label htmlFor={`property-${index}-type`}>Type</Label>
                     <Select
                       value={property.type}
-                      onValueChange={(value) => updateProperty(index, "type", value as PropertyType)}
+                      onValueChange={(value) =>
+                        updateProperty(index, 'type', value as PropertyType)
+                      }
                     >
-                      <SelectTrigger id={`property-${index}-type`} className="mt-1">
+                      <SelectTrigger
+                        id={`property-${index}-type`}
+                        className="mt-1"
+                      >
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -239,9 +287,13 @@ export default function SchemaGenerator() {
                       <Checkbox
                         id={`property-${index}-required`}
                         checked={property.required}
-                        onCheckedChange={(checked) => updateProperty(index, "required", checked)}
+                        onCheckedChange={(checked) =>
+                          updateProperty(index, 'required', checked)
+                        }
                       />
-                      <Label htmlFor={`property-${index}-required`}>Required</Label>
+                      <Label htmlFor={`property-${index}-required`}>
+                        Required
+                      </Label>
                     </div>
                   </div>
 
@@ -250,22 +302,31 @@ export default function SchemaGenerator() {
                       <Checkbox
                         id={`property-${index}-unique`}
                         checked={property.unique}
-                        onCheckedChange={(checked) => updateProperty(index, "unique", checked)}
+                        onCheckedChange={(checked) =>
+                          updateProperty(index, 'unique', checked)
+                        }
                       />
                       <Label htmlFor={`property-${index}-unique`}>Unique</Label>
                     </div>
                   </div>
 
-                  {(property.type === "Number" || property.type === "String") && (
+                  {(property.type === 'Number' ||
+                    property.type === 'String') && (
                     <>
                       <div className="col-span-1">
                         <Label htmlFor={`property-${index}-min`}>Min</Label>
                         <Input
                           id={`property-${index}-min`}
                           type="number"
-                          value={property.min || ""}
+                          value={property.min || ''}
                           onChange={(e) =>
-                            updateProperty(index, "min", e.target.value ? Number(e.target.value) : undefined)
+                            updateProperty(
+                              index,
+                              'min',
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
                           }
                           className="mt-1"
                         />
@@ -276,9 +337,15 @@ export default function SchemaGenerator() {
                         <Input
                           id={`property-${index}-max`}
                           type="number"
-                          value={property.max || ""}
+                          value={property.max || ''}
                           onChange={(e) =>
-                            updateProperty(index, "max", e.target.value ? Number(e.target.value) : undefined)
+                            updateProperty(
+                              index,
+                              'max',
+                              e.target.value
+                                ? Number(e.target.value)
+                                : undefined
+                            )
                           }
                           className="mt-1"
                         />
@@ -302,7 +369,10 @@ export default function SchemaGenerator() {
             </div>
 
             <div className="flex gap-4">
-              <Button onClick={generateSchemas} className="flex-1">
+              <Button
+                onClick={generateSchemas}
+                className="flex-1"
+              >
                 Generate Schemas
               </Button>
               <Button
@@ -322,20 +392,32 @@ export default function SchemaGenerator() {
       {generatedCode.mongoose && (
         <Card>
           <CardContent className="pt-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
               <TabsList className="grid grid-cols-3 mb-4">
                 <TabsTrigger value="mongoose">Mongoose</TabsTrigger>
                 <TabsTrigger value="zod">Zod</TabsTrigger>
                 <TabsTrigger value="typescript">TypeScript</TabsTrigger>
               </TabsList>
               <TabsContent value="mongoose">
-                <CodeBlock code={generatedCode.mongoose} language="typescript" />
+                <CodeBlock
+                  code={generatedCode.mongoose}
+                  language="typescript"
+                />
               </TabsContent>
               <TabsContent value="zod">
-                <CodeBlock code={generatedCode.zod} language="typescript" />
+                <CodeBlock
+                  code={generatedCode.zod}
+                  language="typescript"
+                />
               </TabsContent>
               <TabsContent value="typescript">
-                <CodeBlock code={generatedCode.typescript} language="typescript" />
+                <CodeBlock
+                  code={generatedCode.typescript}
+                  language="typescript"
+                />
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -344,4 +426,3 @@ export default function SchemaGenerator() {
     </div>
   )
 }
-

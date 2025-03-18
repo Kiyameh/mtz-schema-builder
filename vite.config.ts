@@ -10,5 +10,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/<REPO>/',
+  base: '/mtz-schema-builder/',
 })
